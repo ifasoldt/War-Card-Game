@@ -1,16 +1,22 @@
 require './deck'
 
 class Player
-  attr_reader :name, :playing_deck, :capture_deck, :played_card
+  attr_accessor :name, :playing_deck, :capture_deck, :played_card
   def initialize(name)
     @name = name
-    @playing_deck = Deck.new
+    @playing_deck = Deck.new.deck
+    @capture_deck = []
   end
 
   def play_card
     @played_card = @playing_deck.shift
   end
+
+  def shuffle
+    playing_deck.shuffle!
+  end
 end
 
-computer = Player.new("Computer")
-puts computer.name
+5.times do |x|
+  puts "hello"
+end
