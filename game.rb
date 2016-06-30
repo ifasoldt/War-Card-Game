@@ -1,6 +1,7 @@
 require './player'
 require './deck'
 require './card'
+require 'erb'
 
 class Game
   attr_accessor :round_counter, :war_counter, :war_box, :player1, :player2, :winner, :total_record
@@ -63,7 +64,7 @@ class Game
         @winner = "Tie!"
       end
       # ask_for_rematch
-      self.total_record << { rounds: @round_counter, Wars: @war_counter, winner: @winner }
+      self.total_record << { rounds: @round_counter, wars: @war_counter, winner: @winner }
       @round_counter = 0
       @war_counter = 0
       @winner = ''
@@ -104,7 +105,9 @@ class Game
   end
 
   def results_to_file
-    puts self.total_record.inspect
+    new_file = File.open('results.html', 'w+')
+    new_file << ERB.new(File.read('results.erb')).result(binding)
+    new_file.close
   end
 end
 

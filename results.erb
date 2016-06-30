@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WAR REPORT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    </script>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th colspan="4"><h2>WAR REPORT</h2></th>
+      </tr>
+      <tr>
+        <td>Game#</td>
+        <td>Winner</td>
+        <td>Rounds</td>
+        <td>Wars</td>
+      </tr>
+      <% i = 0 %>
+      <% while i < self.total_record.length %>
+      <tr>
+        <td><%= "Game #{i + 1}" %></td>
+        <td><%= self.total_record[i][:winner] %></td>
+        <td><%= self.total_record[i][:rounds] %></td>
+        <td><%= self.total_record[i][:wars] %></td>
+        <% i += 1 %>
+      </tr>
+      <%end%>
+    </table>
+  </body>
+</html>
+
+
+
+      <tr>
