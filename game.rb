@@ -121,13 +121,14 @@ class Game
     puts "After #{self.round_counter} rounds and #{self.war_counter} WARs, it's a tie!  Would you like a rematch? (Y/N)"
     @winner = "Tie!"
   end
-  
+
   def rematch?
     response = gets.chomp&.downcase[0]
     if response == "y"
       self.rematch = true
     else
       self.rematch = false
+      puts "Thanks for playing!"
     end
     rematch
   end
@@ -144,8 +145,12 @@ class Game
     new_file << ERB.new(File.read('results.erb')).result(binding)
     new_file.close
   end
+  def open_webpage
+    system("open", "results.html")
+  end
 end
 
 bob = Game.new
 bob.play
 bob.results_to_file
+bob.open_webpage
