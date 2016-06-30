@@ -19,69 +19,27 @@ class Game
   def play
     rematch = true
     while rematch
-      puts "All right, lets play war!"
-      player1.playing_deck = Deck.new.deck
-      player2.playing_deck = Deck.new.deck
-      war_box.clear
-      player1.capture_deck.clear
-      player2.capture_deck.clear
-      player2.shuffle
-      player1.shuffle
+      setup
       until player1.playing_deck == [] || player2.playing_deck == []
-        player1.play_card
-        player2.play_card
-        combine_decks
+        draw
         if player1.played_card.value > player2.played_card.value
-          player1.capture_deck.insert(0, player2.played_card, player1.played_card)
-          player1.capture_deck += war_box
-          war_box.clear
-          puts "Sean's #{player1.played_card.name} of #{player1.played_card.suit} beat Isaiah's #{player2.played_card.name} of #{player2.played_card.suit}"
-          puts player1.capture_deck.length
-          @round_counter += 1
+          player1_wins
         elsif player2.played_card.value > player1.played_card.value
-          player2.capture_deck.insert(0, player2.played_card, player1.played_card)
-          player2.capture_deck += war_box
-          war_box.clear
-          puts "Isaiah's #{player2.played_card.name} of #{player2.played_card.suit} beat Sean's #{player1.played_card.name} of #{player1.played_card.suit}"
-          puts player2.capture_deck.length
-          @round_counter += 1
+          player2_wins
         else
           war_time
-          puts "War!!"
         end
         combine_decks
       end
-      if player1.capture_deck.length == 0 && player1.playing_deck.length == 0
-        puts "Isaiah won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
-        puts player2.capture_deck.length + player2.playing_deck.length
-        @winner = "Isaiah"
-      elsif player2.capture_deck.length == 0 && player2.playing_deck.length == 0
-        puts "Sean won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
-        puts player1.capture_deck.length + player1.playing_deck.length
-        @winner = "Sean"
-      else
-        puts "it's a tie! Would you like a rematch"
-        @winner = "Tie!"
-      end
-      # ask_for_rematch
+      end_game
       self.total_record << { rounds: @round_counter, wars: @war_counter, winner: @winner }
       @round_counter = 0
       @war_counter = 0
       @winner = ''
-      puts "Do you want a rematch? (Y/N)"
-      response = gets.chomp&.downcase[0]
-      rematch = response == "y" ? true : false
+      rematch
     end
   end
 
-  # def ask_for_rematch
-  #   resp = gets.chomp&.downcase[0]
-  #   if resp == "y"
-  #     Game.new.play
-  #   else
-  #     puts "Thanks for playing."
-  #   end
-  # end
   def combine_decks
     if player1.playing_deck == []
       player1.playing_deck = player1.capture_deck.shuffle!
@@ -93,6 +51,36 @@ class Game
     end
   end
 
+  def setup
+    player1.playing_deck = Deck.new.deck
+    player2.playing_deck = Deck.new.deck
+    war_box.clear
+    player1.capture_deck.clear
+    player2.capture_deck.clear
+    player2.shuffle
+    player1.shuffle
+  end
+
+  def draw
+    player1.play_card
+    player2.play_card
+    combine_decks
+  end
+
+  def player1_wins
+    player1.capture_deck.insert(0, player2.played_card, player1.played_card)
+    player1.capture_deck += war_box
+    war_box.clear
+    @round_counter += 1
+  end
+
+  def player2_wins
+    player2.capture_deck.insert(0, player2.played_card, player1.played_card)
+    player2.capture_deck += war_box
+    war_box.clear
+    @round_counter += 1
+  end
+
   def war_time
     war_box.insert(-1, player2.played_card, player1.played_card)
     4.times do |x|
@@ -102,6 +90,30 @@ class Game
       war_box.insert(-1, player2.played_card, player1.played_card)
     end
       @war_counter += 1
+  end
+
+  def end_game
+    if player1.capture_deck.length == 0 && player1.playing_deck.length == 0
+      puts "Isaiah won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
+      @winner = "Isaiah"
+    elsif player2.capture_deck.length == 0 && player2.playing_deck.length == 0
+      puts "Sean won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
+      @winner = "Sean"
+    else
+      puts "After #{self.round_counter} rounds and #{self.war_counter} WARs, it's a tie!  Would you like a rematch? (Y/N)"
+      @winner = "Tie!"
+    end
+  end
+
+  def rematch
+    response = gets.chomp&.downcase[0]
+    puts response.inspect
+    if response == "y"
+      rematch = true
+    else
+      rematch = false
+    end
+    rematch
   end
 
   def results_to_file
