@@ -4,7 +4,7 @@ require './card'
 require 'erb'
 
 class Game
-  attr_accessor :round_counter, :war_counter, :war_box, :player1, :player2, :winner, :total_record
+  attr_accessor :round_counter, :war_counter, :war_box, :player1, :player2, :winner, :total_record, :rematch
   def initialize
     self.round_counter = 0
     self.war_counter = 0
@@ -17,26 +17,14 @@ class Game
 
 
   def play
-    rematch = true
+    self.rematch = true
     while rematch
       setup
       until player1.playing_deck == [] || player2.playing_deck == []
-        draw
-        if player1.played_card.value > player2.played_card.value
-          player1_wins
-        elsif player2.played_card.value > player1.played_card.value
-          player2_wins
-        else
-          war_time
-        end
-        combine_decks
+      clash
       end
-      end_game
-      self.total_record << { rounds: @round_counter, wars: @war_counter, winner: @winner }
-      @round_counter = 0
-      @war_counter = 0
-      @winner = ''
-      rematch
+      end_and_record
+      rematch?
     end
   end
 
@@ -59,6 +47,18 @@ class Game
     player2.capture_deck.clear
     player2.shuffle
     player1.shuffle
+  end
+
+  def clash
+      draw
+      if player1.played_card.value > player2.played_card.value
+        player1_wins
+      elsif player2.played_card.value > player1.played_card.value
+        player2_wins
+      else
+        war_time
+      end
+      combine_decks
   end
 
   def draw
@@ -92,28 +92,51 @@ class Game
       @war_counter += 1
   end
 
+  def end_and_record
+    end_game
+    record_results
+  end
+
   def end_game
     if player1.capture_deck.length == 0 && player1.playing_deck.length == 0
-      puts "Isaiah won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
-      @winner = "Isaiah"
+      isaiah_wins
     elsif player2.capture_deck.length == 0 && player2.playing_deck.length == 0
-      puts "Sean won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
-      @winner = "Sean"
+      sean_wins
     else
-      puts "After #{self.round_counter} rounds and #{self.war_counter} WARs, it's a tie!  Would you like a rematch? (Y/N)"
-      @winner = "Tie!"
+      nobody_wins
     end
   end
 
-  def rematch
+  def isaiah_wins
+    puts "Isaiah won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
+    @winner = "Isaiah"
+  end
+
+  def sean_wins
+    puts "Sean won this game after #{self.round_counter} rounds and survived #{self.war_counter} WARs. Would you like a rematch? (Y/N)"
+    @winner = "Sean"
+  end
+
+  def nobody_wins
+    puts "After #{self.round_counter} rounds and #{self.war_counter} WARs, it's a tie!  Would you like a rematch? (Y/N)"
+    @winner = "Tie!"
+  end
+  
+  def rematch?
     response = gets.chomp&.downcase[0]
-    puts response.inspect
     if response == "y"
-      rematch = true
+      self.rematch = true
     else
-      rematch = false
+      self.rematch = false
     end
     rematch
+  end
+
+  def record_results
+    self.total_record << { rounds: @round_counter, wars: @war_counter, winner: @winner }
+    @round_counter = 0
+    @war_counter = 0
+    @winner = ''
   end
 
   def results_to_file

@@ -6,23 +6,29 @@
     </script>
   </head>
   <body>
-    <table>
-      <tr>
+    <table style="width: 100%; border: 2px red solid">
+      <tr style="border: 2px red solid">
         <th colspan="4"><h2>WAR REPORT</h2></th>
       </tr>
-      <tr>
-        <td>Game#</td>
-        <td>Winner</td>
-        <td>Rounds</td>
-        <td>Wars</td>
+      <tr style="border: 2px red solid">
+        <th colspan="4"><h2>Total Rounds <%= self.total_record.inject(0){|sum, records| sum + records[:rounds]}%></th>
+      </tr>
+      <tr style="border: 2px red solid">
+        <th colspan="4"><h2>Total Wars <%= self.total_record.inject(0){|sum, records| sum + records[:wars]}%></th>
+      </tr>
+      <tr style="border: 2px red solid">
+        <td style="border: 2px red solid">Game#</td>
+        <td style="border: 2px red solid">Winner</td>
+        <td style="border: 2px red solid">Rounds</td>
+        <td style="border: 2px red solid">Wars</td>
       </tr>
       <% i = 0 %>
       <% while i < self.total_record.length %>
-      <tr>
-        <td><%= "Game #{i + 1}" %></td>
-        <td><%= self.total_record[i][:winner] %></td>
-        <td><%= self.total_record[i][:rounds] %></td>
-        <td><%= self.total_record[i][:wars] %></td>
+      <tr style="border: 2px red solid">
+        <td style="border: 2px red solid"><%= "Game #{i + 1}" %></td>
+        <td style="border: 2px red solid"><%= self.total_record[i][:winner] %></td>
+        <td style="border: 2px red solid"><%= self.total_record[i][:rounds] %></td>
+        <td style="border: 2px red solid"><%= self.total_record[i][:wars] %></td>
         <% i += 1 %>
       </tr>
       <%end%>
